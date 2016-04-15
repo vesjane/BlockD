@@ -1,7 +1,16 @@
 package 
 {
+	import starling.animation.Transitions;
+	import starling.animation.Tween;
+	import starling.core.Starling;
 	import starling.display.Image;
 	import starling.display.Sprite;
+	import starling.events.Touch;
+	import starling.events.Event;
+	import starling.events.TouchEvent;
+	import starling.events.TouchPhase;
+	import starling.textures.Texture;
+
 	/**
 	 * ...
 	 * @author Garonna
@@ -10,9 +19,12 @@ package
 	{
 		private var img:Image;
 		private var gemTextures:Array;
+		private var tween:Tween;
 		
 		public static const GEM_TOUCHED:String = "GemTouched";
 		
+		public static const DISAPPEAR_DELAY:Number = 0.5;
+		public static const MOVE_DELAY:Number = 0.2;
 		
 		
 		private var holder:Sprite = new Sprite();
@@ -39,10 +51,10 @@ package
 			holder.x = img.width / 2;
 			holder.y = img.height / 2;
 			
-			//this.alpha = 0;
-			
+			this.addEventListener(TouchEvent.TOUCH, onTouch);		
 			
 		}
+		
 		
 		
 		private function randomNumber(min:Number, max:Number):Number 
@@ -59,6 +71,30 @@ package
 			this.scaleX = this.scaleY = this.holder.scaleX = this.holder.scaleY = 1;
 		}
 		
+		public function onTouch(e:TouchEvent):void
+		{
+			var touch:Touch = e.getTouch(stage);
+			if (touch && touch.phase == TouchPhase.ENDED)
+			{
+				this.dispatchEventWith(GEM_TOUCHED);
+				
+			}
+			
+		}
+		
+		public function moveTo(x:Number, y:Number, needCallback:Boolean = false):void
+		{
+			tween = new Tween(this, MOVE_DELAY, Transitions.EASE_IN);
+			tween.moveTo(x, y);
+			tween.fadeTo(1);
+			if (needCallback) tween.onComplete = animationComplete;
+			Starling.juggler.add(tween);
+		}
+		
+		private function animationComplete():void
+		{
+			//this.dispatchEventWith(GEM_MOVED);
+		}
 		
 		//----------------------------------------------
 		private var _gemType:int;
@@ -122,7 +158,7 @@ package
 		{
 			//1 in 16 chance for the wild card gem
 			this.gemType = randomNumber(0, 2);		
-			if (this.gemType == 3) trace ("3!!!!");
+			if (this.gemType == 3) trace ("3!");
 		}
 		
 		
