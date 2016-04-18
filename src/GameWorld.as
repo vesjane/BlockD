@@ -18,7 +18,7 @@ package
 		public static const Y_OFFSET:Number = 35;
 		
 		public static const GEM_WIDTH:Number = 32
-		public static const GEM_HEIGHT:Number = 30;
+		public static const GEM_HEIGHT:Number = 32;
 		
 		private var allgems:Vector.<Gem>;
 		private var gempool:GemPool;
@@ -42,9 +42,9 @@ package
 				gempool.addGem(new Gem());
 			}
 			
-			for (var i:int = 0; i < InitGems.MAX_ROWS; i++ )
+			for (var i:int = InitGems.MAX_ROWS-1; i >= 0;  i-- )
 			{
-				for (var j:int = 0; j < InitGems.MAX_COLS; j++ )
+				for (var j:int = InitGems.MAX_COLS-1; j >= 0;  j-- )
 				{
 					var g:Gem = gempool.getGem();
 					putGemAtRowCol(g, i, j);
@@ -62,7 +62,8 @@ package
 		
 		private function gemTouched(e:Event):void
 		{
-			var gem:Gem = e.target as Gem;			
+			var gem:Gem = e.target as Gem;	
+			gem.visible = false;
 			findeSameGems(gem.row, gem.col);
 			
 		}
@@ -108,19 +109,72 @@ package
 			
 		}
 		
-		private function removeGems():void
+		private function markGems(arr:Vector.<Gem>):void
 		{
+			var idx1:int;
+			var idx2:int;
+			var idx3:int; 
+			var idx4:int; 
+			var idx5:int;
 			
+			var tmpArr:Vector.<Gem> = new Vector.<Gem>;
+			var count:int = 0;
+			
+			for (var i:int  = 0; i <  arr.length; i++ )
+			{
+				 idx2 = arr[i].col + 1 + arr[i].row * InitGems.MAX_COLS;
+				 idx3 = arr[i].col - 1 + arr[i].row * InitGems.MAX_COLS;
+				 idx4 = arr[i].col + (arr[i].row + 1) * InitGems.MAX_COLS;
+				 idx5 = arr[i].col + (arr[i].row - 1) * InitGems.MAX_COLS;
+			
+				if (arr[i].col + 1 < InitGems.MAX_COLS && arr[i].gemType == allgems[idx2].gemType && allgems[idx2].marked!= true)
+				{					
+					allgems[idx2].marked = true;					
+					tmpArr[count] = allgems[idx2]as Gem;
+					count++;
+				}
+				if (arr[i].col - 1  >= 0 && arr[i].gemType == allgems[idx3].gemType && allgems[idx3].marked!= true)
+				{
+					allgems[idx3].marked = true;
+					tmpArr[count] = allgems[idx3] as Gem;
+					count ++;
+				}
+				
+				if (arr[i].row + 1 < InitGems.MAX_ROWS && arr[i].gemType == allgems[idx4].gemType && allgems[idx4].marked!= true)
+				{
+					allgems[idx4].marked = true;
+					tmpArr[count] = allgems[idx3]as Gem;
+					count++;
+				}
+				if (arr[i].row - 1 >= 0 && arr[i].gemType == allgems[idx5].gemType && allgems[idx5].marked!= true)
+				{
+					allgems[idx5].marked = true;
+					tmpArr[count] = allgems[idx5]as Gem;
+					count++;
+				}
+			
+			}
+			
+			if (tmpArr.length > 0)
+			{
+				count = 0;
+				markGems(tmpArr);
+			}
 		}
 		
 		private function findeSameGems(row:int, col:int):void
 		{
 			var idx:int = col + row * InitGems.MAX_COLS;
-			allgems[idx].marked = true;
-			//TODO:: дописать алгоритм поиска одинаковых гемов и маркировать их
+			var tmpArr:Vector.<Gem> = new Vector.<Gem>;
+			allgems[idx].marked = true;			
+			tmpArr[0] = allgems[idx]; 
 			
-			Starling.juggler.delayCall(gemsFillGaps, 0.8);
-			Starling.juggler.delayCall(dropNewGems, 1.5);
+			//TODO:: оптимизировать и исправить алгоритм поиска одинаковых гемов и маркировать их
+			markGems(tmpArr);
+			
+			
+			Starling.juggler.delayCall(gemsFillGaps, 0.1);
+			Starling.juggler.delayCall(dropNewGems, 0.3);
 			
 		}
 		
@@ -151,6 +205,7 @@ package
 					newgem.x = p.x;
 					newgem.y = p.y - (InitGems.MAX_ROWS-2) * GEM_HEIGHT;
 					moveGemToLocation(newgem, m, n);
+					newgem.visible = true;
 				}
 			}
 		}
@@ -167,6 +222,7 @@ package
 				allgems[fromcol + fromrow * InitGems.MAX_COLS] = null;
 			
 			allgems[col + row * InitGems.MAX_COLS] = g;
+			
 		}
 		
 		private function getGemAtRowCol(row:int, col:int):Gem
@@ -187,6 +243,7 @@ package
 		
 		private function removeGemFromRowCol(row:int, col:int):void
 		{
+			
 			gempool.addGem(getGemAtRowCol(row, col));
 			putGemAtRowCol(null, row, col);
 		}
