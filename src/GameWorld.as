@@ -24,6 +24,9 @@ package
 		private var gempool:GemPool;
 		private var contaner:Sprite;
 		
+		private var isTimeGame:Boolean = true;
+		
+		
 		public function GameWorld() 
 		{
 			allgems = new Vector.<Gem>;
@@ -31,8 +34,8 @@ package
 			allgems.fixed = true;
 			contaner = new Sprite();
 			addChild(contaner);
-			contaner.x = 60;
-			contaner.y = 70;
+			contaner.x = 0;
+			contaner.y = 10;
 			
 			//init gemPool
 			gempool = new GemPool(allgems.length);
@@ -73,7 +76,7 @@ package
 		{
 			for each (var g:Gem in allgems)
 			{
-				if (g.marked) removeGemFromRowCol(g.row, g.col);
+				if (g && g.marked) removeGemFromRowCol(g.row, g.col);
 			}
 			//from left col to right most
 			for (var n:int = 0; n < InitGems.MAX_COLS; n++)
@@ -118,37 +121,59 @@ package
 			var idx5:int;
 			
 			var tmpArr:Vector.<Gem> = new Vector.<Gem>;
-			var count:int = 0;
+			var count:int = 0;		
 			
 			for (var i:int  = 0; i <  arr.length; i++ )
 			{
-				 idx2 = arr[i].col + 1 + arr[i].row * InitGems.MAX_COLS;
-				 idx3 = arr[i].col - 1 + arr[i].row * InitGems.MAX_COLS;
+				if (arr[i].col + 1 < InitGems.MAX_COLS)
+				{
+					idx2 = arr[i].col + 1 + arr[i].row * InitGems.MAX_COLS;
+				}
+				if (arr[i].col - 1  >= 0 )
+				{
+					 idx3 = arr[i].col - 1 + arr[i].row * InitGems.MAX_COLS;
+				}
+				 
+				
+				if (arr[i].row + 1 < InitGems.MAX_ROWS)
+				{
+				
 				 idx4 = arr[i].col + (arr[i].row + 1) * InitGems.MAX_COLS;
+				}
+				if (arr[i].row - 1 >= 0 )
+				{				
 				 idx5 = arr[i].col + (arr[i].row - 1) * InitGems.MAX_COLS;
+				}
+				
+				//----------------------------------------
 			
-				if (arr[i].col + 1 < InitGems.MAX_COLS && arr[i].gemType == allgems[idx2].gemType && allgems[idx2].marked!= true)
+				
+				if (allgems[idx2]&& arr[i].col + 1 < InitGems.MAX_COLS && arr[i].gemType == allgems[idx2].gemType && allgems[idx2].marked!= true)
 				{					
-					allgems[idx2].marked = true;					
+					allgems[idx2].marked = true;
+					allgems[idx2].visible = false;
 					tmpArr[count] = allgems[idx2]as Gem;
 					count++;
 				}
-				if (arr[i].col - 1  >= 0 && arr[i].gemType == allgems[idx3].gemType && allgems[idx3].marked!= true)
+				if ( allgems[idx3]&& arr[i].col - 1  >= 0 && arr[i].gemType == allgems[idx3].gemType && allgems[idx3].marked!= true)
 				{
 					allgems[idx3].marked = true;
 					tmpArr[count] = allgems[idx3] as Gem;
+					allgems[idx3].visible = false;
 					count ++;
 				}
 				
-				if (arr[i].row + 1 < InitGems.MAX_ROWS && arr[i].gemType == allgems[idx4].gemType && allgems[idx4].marked!= true)
+				if ( allgems[idx4]&& arr[i].row + 1 < InitGems.MAX_ROWS && arr[i].gemType == allgems[idx4].gemType && allgems[idx4].marked!= true)
 				{
 					allgems[idx4].marked = true;
-					tmpArr[count] = allgems[idx3]as Gem;
+					tmpArr[count] = allgems[idx4]as Gem;
+					allgems[idx4].visible = false;
 					count++;
 				}
-				if (arr[i].row - 1 >= 0 && arr[i].gemType == allgems[idx5].gemType && allgems[idx5].marked!= true)
+				if (allgems[idx5]&& arr[i].row - 1 >= 0 && arr[i].gemType == allgems[idx5].gemType && allgems[idx5].marked!= true)
 				{
 					allgems[idx5].marked = true;
+					allgems[idx5].visible = false;
 					tmpArr[count] = allgems[idx5]as Gem;
 					count++;
 				}
@@ -157,7 +182,7 @@ package
 			
 			if (tmpArr.length > 0)
 			{
-				count = 0;
+				count = 0;				
 				markGems(tmpArr);
 			}
 		}
@@ -170,16 +195,20 @@ package
 			tmpArr[0] = allgems[idx]; 
 			
 			//TODO:: оптимизировать и исправить алгоритм поиска одинаковых гемов и маркировать их
-			markGems(tmpArr);
+			if(tmpArr && tmpArr.length>0)
+				markGems(tmpArr);
 			
 			
 			Starling.juggler.delayCall(gemsFillGaps, 0.1);
-			Starling.juggler.delayCall(dropNewGems, 0.3);
+			if(!isTimeGame)
+				Starling.juggler.delayCall(dropNewGems, 0.3);
 			
 		}
 		
 		private function dropNewGems():void
 		{
+		
+		
 			//from left col to right most
 			for (var n:int = 0; n < InitGems.MAX_COLS; n++)
 			{
@@ -195,7 +224,7 @@ package
 						
 						gapStarted = true;
 					}
-					
+				
 					var newgem:Gem = gempool.getGem();
 					newgem.revive();
 					putGemAtRowCol(newgem, m, n);

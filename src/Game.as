@@ -36,7 +36,7 @@ package
             createGameBoard();
         }
 		
-		private function createGameBoard()
+		private function createGameBoard():void
 		{
 			var game:InitGems = InitGems.instance();
 			

@@ -68,7 +68,9 @@ package
 			this.alpha = holder.alpha = 1.0;
 			this.marked = false;
 			this.randomize();
+			img.texture = gemTextures[this.gemType] as Texture;
 			this.scaleX = this.scaleY = this.holder.scaleX = this.holder.scaleY = 1;
+			
 		}
 		
 		public function onTouch(e:TouchEvent):void
@@ -106,7 +108,11 @@ package
 		
 		public function set gemType(value:int):void 
 		{
-			_gemType = value;
+			if (_gemType == value)
+				return;
+			_gemType = value;	
+			if (img)
+				img.texture = gemTextures[_gemType] as Texture;
 		}
 		
 		private var _row:int;

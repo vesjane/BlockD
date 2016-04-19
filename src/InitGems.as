@@ -16,8 +16,8 @@ package
 		private var assetMgr:AssetManager;
 		private static var _instance:InitGems = null;
 		
-		public static const MAX_COLS:int = 8;
-		public static const MAX_ROWS:int = 8;
+		public static const MAX_COLS:int = 10;
+		public static const MAX_ROWS:int = 14;
 		
 		
 		public function InitGems() 
