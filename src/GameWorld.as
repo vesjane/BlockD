@@ -27,6 +27,9 @@ package
 		private var isTimeGame:Boolean = true;
 		
 		
+		private var _stWidth:int;
+		private var _stHeight:int;
+		
 		public function GameWorld() 
 		{
 			allgems = new Vector.<Gem>;
@@ -59,14 +62,15 @@ package
 					
 					contaner.addChild (g);
 					
+					
 				}
 			}
 		}
 		
+	
 		private function gemTouched(e:Event):void
 		{
-			var gem:Gem = e.target as Gem;	
-			gem.visible = false;
+			var gem:Gem = e.target as Gem;				
 			findeSameGems(gem.row, gem.col);
 			
 		}
@@ -85,7 +89,11 @@ package
 				EachRow: for (var m:int = InitGems.MAX_ROWS-1; m > -1; m--)
 				{
 					g = getGemAtRowCol(m, n);
-					if (g) continue;
+					if (g)
+					{
+						//TODO: Add column shift
+						continue;
+					}
 					else
 					{	
 						//search for a gem in the above rows, when found bring it down
@@ -123,6 +131,7 @@ package
 			var tmpArr:Vector.<Gem> = new Vector.<Gem>;
 			var count:int = 0;		
 			
+			
 			for (var i:int  = 0; i <  arr.length; i++ )
 			{
 				if (arr[i].col + 1 < InitGems.MAX_COLS)
@@ -149,7 +158,7 @@ package
 			
 				
 				if (allgems[idx2]&& arr[i].col + 1 < InitGems.MAX_COLS && arr[i].gemType == allgems[idx2].gemType && allgems[idx2].marked!= true)
-				{					
+				{	
 					allgems[idx2].marked = true;
 					allgems[idx2].visible = false;
 					tmpArr[count] = allgems[idx2]as Gem;
@@ -157,6 +166,7 @@ package
 				}
 				if ( allgems[idx3]&& arr[i].col - 1  >= 0 && arr[i].gemType == allgems[idx3].gemType && allgems[idx3].marked!= true)
 				{
+					
 					allgems[idx3].marked = true;
 					tmpArr[count] = allgems[idx3] as Gem;
 					allgems[idx3].visible = false;
@@ -165,6 +175,7 @@ package
 				
 				if ( allgems[idx4]&& arr[i].row + 1 < InitGems.MAX_ROWS && arr[i].gemType == allgems[idx4].gemType && allgems[idx4].marked!= true)
 				{
+					
 					allgems[idx4].marked = true;
 					tmpArr[count] = allgems[idx4]as Gem;
 					allgems[idx4].visible = false;
@@ -172,6 +183,7 @@ package
 				}
 				if (allgems[idx5]&& arr[i].row - 1 >= 0 && arr[i].gemType == allgems[idx5].gemType && allgems[idx5].marked!= true)
 				{
+					
 					allgems[idx5].marked = true;
 					allgems[idx5].visible = false;
 					tmpArr[count] = allgems[idx5]as Gem;
@@ -181,7 +193,7 @@ package
 			}
 			
 			if (tmpArr.length > 0)
-			{
+			{			
 				count = 0;				
 				markGems(tmpArr);
 			}
@@ -191,7 +203,7 @@ package
 		{
 			var idx:int = col + row * InitGems.MAX_COLS;
 			var tmpArr:Vector.<Gem> = new Vector.<Gem>;
-			allgems[idx].marked = true;			
+			//allgems[idx].marked = true;			
 			tmpArr[0] = allgems[idx]; 
 			
 			//TODO:: оптимизировать и исправить алгоритм поиска одинаковых гемов и маркировать их
@@ -207,7 +219,7 @@ package
 		
 		private function dropNewGems():void
 		{
-		
+			
 		
 			//from left col to right most
 			for (var n:int = 0; n < InitGems.MAX_COLS; n++)

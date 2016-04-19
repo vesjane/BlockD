@@ -21,7 +21,7 @@ package
 	 */
 	public class Game extends Sprite 
 	{		
-        private var board:GameWorld = new GameWorld();
+        private var board:GameWorld;
 		
         public function Game()
         {
@@ -40,11 +40,28 @@ package
 		{
 			var game:InitGems = InitGems.instance();
 			
-			board = new GameWorld();			
+			board = new GameWorld();	
+			var img:Image = new Image(game.getAssetMgr().getTexture("bg"));
 			
-			addChild(new Image(game.getAssetMgr().getTexture("bg")));
+			addChild(img);
+			placeBackground(img);
 			addChild(board);
+			
 		}
+		
+		private function placeBackground(scaledObject:Image):void {
+                        scaledObject.scaleX = scaledObject.scaleY = 1;
+                        var scale:Number;
+                        if (scaledObject.width / scaledObject.height > stage.stageWidth / stage.stageHeight){
+                                scale = stage.stageHeight / scaledObject.height;
+                        }
+                        else {
+                                scale = stage.stageWidth / scaledObject.width;
+                        }
+                        scaledObject.scaleX = scaledObject.scaleY = scale;
+                        scaledObject.x = (stage.stageWidth - scaledObject.width) / 2;
+                        scaledObject.y = (stage.stageHeight - scaledObject.height) / 2;
+                }
 		
 	}
 	
