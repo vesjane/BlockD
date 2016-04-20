@@ -14,11 +14,11 @@ package
 	public class GameWorld extends Sprite
 	{
 		
-		public static const X_OFFSET:Number = 35;
-		public static const Y_OFFSET:Number = 35;
+		public static const X_OFFSET:Number = 0;
+		public static const Y_OFFSET:Number = 50;
 		
-		public static const GEM_WIDTH:Number = 32
-		public static const GEM_HEIGHT:Number = 32;
+		public static const GEM_WIDTH:Number = 41;
+		public static const GEM_HEIGHT:Number = 42;
 		
 		private var allgems:Vector.<Gem>;
 		private var gempool:GemPool;
@@ -32,14 +32,15 @@ package
 		
 		public function GameWorld() 
 		{
-			allgems = new Vector.<Gem>;
-			allgems.length = InitGems.MAX_COLS * InitGems.MAX_ROWS;
-			allgems.fixed = true;
-			contaner = new Sprite();
-			addChild(contaner);
-			contaner.x = 0;
-			contaner.y = 10;
+			 addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			
+		}
+		
+	private function onAddedToStage(e:Event):void {
+            removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            allgems = new Vector.<Gem>;
+			allgems.length = InitGems.MAX_COLS * InitGems.MAX_ROWS;
+			allgems.fixed = true;			
 			//init gemPool
 			gempool = new GemPool(allgems.length);
 			
@@ -52,22 +53,23 @@ package
 			{
 				for (var j:int = InitGems.MAX_COLS-1; j >= 0;  j-- )
 				{
-					var g:Gem = gempool.getGem();
+					var g:Gem = gempool.getGem();					
 					putGemAtRowCol(g, i, j);
 					//TODO::Дописать Listener  к гемам
 					g.addEventListener(Gem.GEM_TOUCHED, gemTouched);
 					
 					g.x = X_OFFSET + j * GEM_WIDTH;
 					g.y = Y_OFFSET + i * GEM_HEIGHT;
+				
 					
-					contaner.addChild (g);
 					
+					addChild (g);				
 					
 				}
 			}
-		}
+            
+        }
 		
-	
 		private function gemTouched(e:Event):void
 		{
 			var gem:Gem = e.target as Gem;				

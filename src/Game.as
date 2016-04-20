@@ -44,10 +44,12 @@ package
 			var img:Image = new Image(game.getAssetMgr().getTexture("bg"));
 			
 			addChild(img);
-			placeBackground(img);
+			//placeBackground(img);
 			addChild(board);
 			
 		}
+		
+		
 		
 		private function placeBackground(scaledObject:Image):void {
                         scaledObject.scaleX = scaledObject.scaleY = 1;

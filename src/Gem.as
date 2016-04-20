@@ -49,12 +49,16 @@ package
 			img.y = img.height / 2;
 			
 			holder.x = img.width / 2;
-			holder.y = img.height / 2;
-			
+			holder.y = img.height / 2;		
 			this.addEventListener(TouchEvent.TOUCH, onTouch);		
 			
 		}
 		
+		
+		public function updateScale(sWidth:Number, sHeight:Number):void
+		{
+			
+		}
 		
 		
 		private function randomNumber(min:Number, max:Number):Number 
@@ -69,7 +73,7 @@ package
 			this.marked = false;
 			this.randomize();
 			img.texture = gemTextures[this.gemType] as Texture;
-			this.scaleX = this.scaleY = this.holder.scaleX = this.holder.scaleY = 1;
+			//this.scaleX = this.scaleY = this.holder.scaleX = this.holder.scaleY = stage.stageWidth * .3;
 			
 		}
 		
