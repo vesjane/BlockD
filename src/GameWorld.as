@@ -116,43 +116,120 @@ package
 			{
 				if (g && g.marked) removeGemFromRowCol(g.row, g.col);
 			}
+			
+			
+			//TODO:Не работает! Дописать сдвиг столбцов!!!!!
+			//columnFillGaps();
+			
+			
+			var count:int = 0;
 			//from left col to right most
 			for (var n:int = 0; n < InitGems.MAX_COLS; n++)
 			{
 				//from bottom cell of each col to top
 				EachRow: for (var m:int = InitGems.MAX_ROWS-1; m > -1; m--)
-				{
-					g = getGemAtRowCol(m, n);
-					if (g)
-					{
-						//TODO: Add column shift
-						continue;
-					}
-					else
-					{	
-						//search for a gem in the above rows, when found bring it down
-						//if nothing found until top, then fill all of them with new gems
-						for (var o:int = m - 1; o > -1; o--)
-						{
-							var sg:Gem = getGemAtRowCol(o, n);
-							if (sg)
-							{
-								//remove gem from current position, assign new position
-								//make it move
-								
-								putGemAtRowCol(sg, m, n, o, n);
-								moveGemToLocation(sg, m, n);
-								continue EachRow;
-							}
+				{							
+					
+						g = getGemAtRowCol(m, n);
+						if (g)
+						{							
+							continue;
 						}
-							
-						if (o == -1)
-							break EachRow;
-					}
+						else
+						{	
+							//search for a gem in the above rows, when found bring it down
+							//if nothing found until top, then fill all of them with new gems
+							for (var o:int = m - 1; o > -1; o--)
+							{
+								var sg:Gem = getGemAtRowCol(o, n);
+								if (sg)
+								{
+									//remove gem from current position, assign new position
+									//make it move
+									
+									putGemAtRowCol(sg, m, n, o, n);
+									moveGemToLocation(sg, m, n);
+									continue EachRow;
+								}								
+							}
+								
+								if (o == -1)
+								break EachRow;
+						}
+					
 				}
+			
+			}
+			
+			
+
+			
+		}
+		
+		private function isEmtyColumn(col:int):Boolean
+		{
+			var count:int = 0;
+			for (var o:int = InitGems.MAX_ROWS-1; o > -1; o--)
+			{
+				var sg:Gem = getGemAtRowCol(o, col);
+				if (sg)
+				{
+					continue;
+				}
+				else
+				{
+					count++;
+				}
+								
+			}
+			if (count == InitGems.MAX_ROWS - 1 )
+			{
+				return true				
+								
+			} 
+			else
+			{
+				return false;
 			}
 			
 		}
+		
+		
+		private function columnFillGaps():void
+		{
+			for (var n:int = 0; n < InitGems.MAX_COLS; n++)
+			{
+			
+				if (isEmtyColumn(n))
+				{
+					EachCol: for (var c:int = n-1; c > -1; c--)
+					{
+						if (!isEmtyColumn(c))
+						{
+							for (var o:int = InitGems.MAX_ROWS - 1; o > -1; o--)
+							{
+								var sg:Gem = getGemAtRowCol(o,c);
+								if (sg)
+								{
+									putGemAtRowCol(sg,o,n,o,c);
+									moveGemToLocation(sg, o, n);
+									continue EachCol;
+													
+								}
+								if (o == -1)
+								break EachCol;	
+										
+							}
+						}
+								
+					}
+							
+							
+				}
+						
+			}
+		}
+				
 		
 		private function markGems(arr:Vector.<Gem>):void
 		{

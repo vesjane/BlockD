@@ -93,7 +93,7 @@ package
                                 break;
                                 
                                 case ScreenType.GAME_SCREEN:
-                                        //board.removeEventListener(GameEvent.EXIT_GAME, exitGame);
+                                        board.removeEventListener(GameEvent.EXIT_GAME, exitGame);
                                         //board.removeEventListener(GameEvent.GAME_OVER, gameOver);
                                         removeChild(board);
                                         board = null;
