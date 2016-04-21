@@ -7,18 +7,28 @@ package
 	 */
 	
 	import flash.geom.Point;
+	import properties.GameEvent;
 	import starling.core.Starling;
+	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.events.Touch;
+	import starling.events.TouchEvent;
+	import starling.events.TouchPhase;
 	
 	public class GameWorld extends Sprite
 	{
+		
+		
 		
 		public static const X_OFFSET:Number = 0;
 		public static const Y_OFFSET:Number = 50;
 		
 		public static const GEM_WIDTH:Number = 41;
 		public static const GEM_HEIGHT:Number = 42;
+		
+		
+		private var menuButton:Sprite;
 		
 		private var allgems:Vector.<Gem>;
 		private var gempool:GemPool;
@@ -38,6 +48,18 @@ package
 		
 	private function onAddedToStage(e:Event):void {
             removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			
+			var game:InitGems = InitGems.instance();
+			var img:Image = new Image(game.getAssetMgr().getTexture("bg"));			
+			addChild(img);
+			
+			menuButton = new Sprite();
+			menuButton.addChild(new Image(game.getAssetMgr().getTexture("menuBack")));
+			addChild(menuButton);
+			menuButton.x = stage.width/1.5 + menuButton.width/2;
+			menuButton.y = 10;
+			 menuButton.addEventListener(TouchEvent.TOUCH, exitGame); // событие нажатия на кнопку выхода в меню
+			
             allgems = new Vector.<Gem>;
 			allgems.length = InitGems.MAX_COLS * InitGems.MAX_ROWS;
 			allgems.fixed = true;			
@@ -68,6 +90,16 @@ package
 				}
 			}
             
+        }
+		
+		private function exitGame(e:TouchEvent):void 
+		{
+			var touch:Touch = e.getTouch(stage);
+			if (touch && touch.phase == TouchPhase.ENDED)
+			{
+				
+                dispatchEvent(new GameEvent(GameEvent.EXIT_GAME));
+			}
         }
 		
 		private function gemTouched(e:Event):void

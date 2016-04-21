@@ -2,6 +2,9 @@ package
 {
 	import flash.desktop.NativeApplication;
 	import flash.display.Bitmap;
+	import properties.GameEvent;
+	import properties.ScreenType;
+	import screens.MainMenu;
 	import starling.display.Sprite;	
 	import flash.filesystem.File;
 	import flash.geom.Rectangle;
@@ -9,11 +12,14 @@ package
 	import starling.core.Starling;
 	import starling.display.Image;
 	import starling.events.Event;
+	import starling.events.Touch;
 	import starling.textures.Texture;
 	import starling.utils.AssetManager;
 	import starling.utils.formatString;
 	import starling.utils.RectangleUtil;
 	import starling.utils.ScaleMode;
+	import starling.events.TouchEvent;
+	import starling.events.TouchPhase;
 	
 	/**
 	 * ...
@@ -21,7 +27,16 @@ package
 	 */
 	public class Game extends Sprite 
 	{		
+        
+		/** @private экран главного меню */
+        private var menuScreen:MainMenu;
+        /** @private экран игры */
         private var board:GameWorld;
+		
+		/** @private эта переменная хранит текстовое значения типа экрана 
+                 * из constants.ScreenType, который отображается в данный момент 
+                 * нужна для корректной очистки от слушателей и экранных объектов */
+		private var currentScreen:String;
 		
         public function Game()
         {
@@ -32,38 +47,64 @@ package
 		
 		private function onAddedToStage(e:Event):void {
             removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-            
-            createGameBoard();
+            showMenu();
+           // createGameBoard();
         }
 		
-		private function createGameBoard():void
+		
+		
+		private function showMenu():void
 		{
-			var game:InitGems = InitGems.instance();
-			
-			board = new GameWorld();	
-			var img:Image = new Image(game.getAssetMgr().getTexture("bg"));
-			
-			addChild(img);
-			//placeBackground(img);
-			addChild(board);
-			
+			currentScreen = ScreenType.MAIN_MENU;
+			menuScreen = new MainMenu(); // создаём меню и добавляем его на сцену
+            addChild(menuScreen);
+			menuScreen.playButton.addEventListener(TouchEvent.TOUCH, startGame); 
+		
 		}
-		
-		
-		
-		private function placeBackground(scaledObject:Image):void {
-                        scaledObject.scaleX = scaledObject.scaleY = 1;
-                        var scale:Number;
-                        if (scaledObject.width / scaledObject.height > stage.stageWidth / stage.stageHeight){
-                                scale = stage.stageHeight / scaledObject.height;
+		 private function startGame(e:TouchEvent):void 
+		 {
+			
+			var touch:Touch = e.getTouch(stage);
+			if (touch && touch.phase == TouchPhase.ENDED)
+			{
+				clear(); // очищаем
+				currentScreen = ScreenType.GAME_SCREEN;			 
+				board = new GameWorld();			
+				addChild(board);
+				board.addEventListener(GameEvent.EXIT_GAME, exitGame); 
+			}
+			 
+		 }
+		 
+		 private function exitGame(e:GameEvent):void
+		 {
+            clear(); // очищаем
+            showMenu(); // показываем главное меню
+			
+         }
+		 
+		  private function clear():void {
+                        switch (currentScreen) {
+                                case ScreenType.MAIN_MENU:
+                                        menuScreen.playButton.removeEventListener(TouchEvent.TOUCH, startGame);
+                                       // menuScreen.exitButton.removeEventListener(TouchEvent.TOUCH_TAP, deactivate);
+                                        removeChild(menuScreen);
+                                        menuScreen = null;
+                                break;
+                                
+                                case ScreenType.GAME_SCREEN:
+                                        //board.removeEventListener(GameEvent.EXIT_GAME, exitGame);
+                                        //board.removeEventListener(GameEvent.GAME_OVER, gameOver);
+                                        removeChild(board);
+                                        board = null;
+                                break;                                
+                               
                         }
-                        else {
-                                scale = stage.stageWidth / scaledObject.width;
-                        }
-                        scaledObject.scaleX = scaledObject.scaleY = scale;
-                        scaledObject.x = (stage.stageWidth - scaledObject.width) / 2;
-                        scaledObject.y = (stage.stageHeight - scaledObject.height) / 2;
                 }
+		
+				
+			
+		
 		
 	}
 	

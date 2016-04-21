@@ -54,12 +54,40 @@ package
 			var bg:Bitmap = new Embed.bg as Bitmap;
 			var bg_texture:Texture = Texture.fromBitmap(bg);
 			
+			//инициализация главного меню
+			var btn1:Bitmap = new Embed.btn1 as Bitmap;
+			var btn1_texture:Texture = Texture.fromBitmap(btn1);
+			
+			var btn2:Bitmap = new Embed.btn2 as Bitmap;
+			var btn2_texture:Texture = Texture.fromBitmap(btn2);
+			
+			var btn3:Bitmap = new Embed.btn3 as Bitmap;
+			var btn3_texture:Texture = Texture.fromBitmap(btn3);
+			
+			var brand:Bitmap = new Embed.brand as Bitmap;
+			var brand_texture:Texture = Texture.fromBitmap(brand);	
+			
+			var menuBack:Bitmap = new Embed.menuBack as Bitmap;
+			var menuBack_texture:Texture = Texture.fromBitmap(menuBack);			
+		
+			
+			
 			assetMgr = new AssetManager();
 			assetMgr.addTexture("gem1", gem1_texture);
 			assetMgr.addTexture("gem2", gem2_texture);
 			assetMgr.addTexture("gem3", gem3_texture);
 			
 			assetMgr.addTexture("bg", bg_texture);
+			
+			
+			assetMgr.addTexture("btn1", btn1_texture);
+			assetMgr.addTexture("btn2", btn2_texture);
+			assetMgr.addTexture("btn3", btn3_texture);
+			
+			assetMgr.addTexture("brand", brand_texture);
+			
+			assetMgr.addTexture("menuBack", menuBack_texture);		
+		
 		}
 		
 	}
