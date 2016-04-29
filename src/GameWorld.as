@@ -115,14 +115,8 @@ package
 			for each (var g:Gem in allgems)
 			{
 				if (g && g.marked) removeGemFromRowCol(g.row, g.col);
-			}
+			}			
 			
-			
-			//TODO:Не работает! Дописать сдвиг столбцов!!!!!
-			//columnFillGaps();
-			
-			
-			var count:int = 0;
 			//from left col to right most
 			for (var n:int = 0; n < InitGems.MAX_COLS; n++)
 			{
@@ -136,7 +130,8 @@ package
 							continue;
 						}
 						else
-						{	
+						{
+							
 							//search for a gem in the above rows, when found bring it down
 							//if nothing found until top, then fill all of them with new gems
 							for (var o:int = m - 1; o > -1; o--)
@@ -159,77 +154,72 @@ package
 					
 				}
 			
-			}
 			
-			
-
+			}	
 			
 		}
 		
-		private function isEmtyColumn(col:int):Boolean
+		
+		private function isEmptyCol(col:int):Boolean
 		{
+			
 			var count:int = 0;
-			for (var o:int = InitGems.MAX_ROWS-1; o > -1; o--)
+			//from top row to bottom 
+			for (var n:int = col; n > -1; n--)
 			{
-				var sg:Gem = getGemAtRowCol(o, col);
-				if (sg)
-				{
-					continue;
-				}
-				else
-				{
-					count++;
-				}
-								
-			}
-			if (count == InitGems.MAX_ROWS - 1 )
-			{
-				return true				
-								
-			} 
-			else
-			{
-				return false;
-			}
-			
-		}
-		
-		
-		private function columnFillGaps():void
-		{
-			for (var n:int = 0; n < InitGems.MAX_COLS; n++)
-			{
-			
-				if (isEmtyColumn(n))
-				{
-					EachCol: for (var c:int = n-1; c > -1; c--)
+				for (var i:int = 0; i < InitGems.MAX_ROWS; i++ )
 					{
-						if (!isEmtyColumn(c))
-						{
-							for (var o:int = InitGems.MAX_ROWS - 1; o > -1; o--)
+						var g:Gem = getGemAtRowCol(i, col);
+						if (g)
+						{							
+							continue;
+						}
+						else
+							count++; 
+					}
+					if (count == InitGems.MAX_ROWS)
+					{
+						return true
+					}
+					count = 0;
+			
+			}	
+			
+			return false;
+		}
+
+		
+		private function gemsFillRowGaps():void
+		{
+			var gapCounter:int = 1;
+			
+				for (var c:int = InitGems.MAX_COLS - 1; c > -1; c--)
+				{
+					if (isEmptyCol(c))
+					{						
+						for (var r:int = InitGems.MAX_ROWS - 1; r > -1; r--)
 							{
-								var sg:Gem = getGemAtRowCol(o,c);
+								var sg:Gem = getGemAtRowCol(r, c-gapCounter);
 								if (sg)
 								{
-									putGemAtRowCol(sg,o,n,o,c);
-									moveGemToLocation(sg, o, n);
-									continue EachCol;
-													
-								}
-								if (o == -1)
-								break EachCol;	
+									putGemAtRowCol(sg, r, c, r, c-gapCounter);
+									moveGemToLocation(sg, r, c);	
+																				
 										
+								} 
 							}
-						}
-								
 					}
-							
-							
-				}
-						
-			}
-		}
+					else
+					{						
+						continue;
+					}								
 				
+			}
+			
+		}
+	
+		
+						
 		
 		private function markGems(arr:Vector.<Gem>):void
 		{
@@ -323,15 +313,14 @@ package
 			
 			
 			Starling.juggler.delayCall(gemsFillGaps, 0.1);
+			Starling.juggler.delayCall(gemsFillRowGaps, 0.2);			
 			if(!isTimeGame)
 				Starling.juggler.delayCall(dropNewGems, 0.3);
 			
 		}
 		
 		private function dropNewGems():void
-		{
-			
-		
+		{		
 			//from left col to right most
 			for (var n:int = 0; n < InitGems.MAX_COLS; n++)
 			{
