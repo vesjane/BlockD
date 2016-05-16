@@ -6,7 +6,10 @@ package
 	 * 
 	 */
 	
+	import Buttons.Button;
 	import flash.geom.Point;
+	import flash.text.Font;
+	import flash.utils.Timer;
 	import properties.GameEvent;
 	import starling.core.Starling;
 	import starling.display.Image;
@@ -15,6 +18,7 @@ package
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
+	import starling.text.TextField;
 	
 	public class GameWorld extends Sprite
 	{
@@ -27,18 +31,46 @@ package
 		public static const GEM_WIDTH:Number = 41;
 		public static const GEM_HEIGHT:Number = 42;
 		
-		
-		private var menuButton:Sprite;
-		
 		private var allgems:Vector.<Gem>;
 		private var gempool:GemPool;
 		private var contaner:Sprite;
 		
+		/** @private тип выбранной игры( бесконечная или на время) */
 		private var isTimeGame:Boolean = true;
 		
 		
 		private var _stWidth:int;
 		private var _stHeight:int;
+		
+		/** @private кнопка для выхода в главное меню */
+        private var menuButton:Button;
+		/** @private игровой таймер. нужен для добавления нового айтема */
+        private var gameTimer:Timer;
+        /** @private номер текущего уровня */
+        private var currentLevel:uint;
+        /** @private текущее количество очков */
+        private var currentScore:int = 0;
+        /** @private текстовое поле для отображения номера уровня */
+        private var levelText:TextField;
+        /** @private текстовое поле для отображения очков */
+         private var scoreText:TextField;
+		 
+		 /** @private текстовое поле для отображения времени */
+        private var timerText:TextField;
+		
+		 
+		[Embed(source = "/../res/Intro.otf",
+		fontName = "Merge",
+		mimeType = "application/x-font",
+		fontWeight="Bold",
+		fontStyle="Bold",
+		advancedAntiAliasing = "true",
+		embedAsCFF="false")]
+		public static const fontMergeBold:Class;
+		
+		
+		private var btnFont:Font;
+		
 		
 		public function GameWorld() 
 		{
@@ -47,20 +79,40 @@ package
 		}
 		
 	private function onAddedToStage(e:Event):void {
-            removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+           
+		
+		removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			contaner = new Sprite();
+			btnFont = new fontMergeBold;
 			
 			var game:InitGems = InitGems.instance();
-			var img:Image = new Image(game.getAssetMgr().getTexture("bg"));			
+			var img:Image = new Image(game.getAssetMgr().getTexture("bg"));	
 			addChild(img);
 			
-			menuButton = new Sprite();
-			menuButton.addChild(new Image(game.getAssetMgr().getTexture("menuBack")));
-			addChild(menuButton);
-			menuButton.x = stage.width/1.5 + menuButton.width/2;
-			menuButton.y = 10;
-			 menuButton.addEventListener(TouchEvent.TOUCH, exitGame); // событие нажатия на кнопку выхода в меню
+			//верхнее меню ------------------------
+			timerText = new TextField(100, 30, "90", btnFont.fontName, 32, 0xFFFFFF);
+			addChild(timerText);
+			timerText.x = 6;
+			timerText.y = 20;
 			
-            allgems = new Vector.<Gem>;
+			scoreText = new TextField(this.width/4, 30, currentScore.toString(), btnFont.fontName, 32, 0xFFFFFF);
+			addChild(scoreText);
+			scoreText.x = (4+GEM_WIDTH)*10 / 2 - scoreText.width / 2;		
+			scoreText.y = 20;
+					
+			menuButton = new Button("",new Image(game.getAssetMgr().getTexture("menuBack")));	
+			addChild(menuButton);
+			menuButton.x = (4+GEM_WIDTH)*10 - menuButton.width;
+			menuButton.y = 20;
+			menuButton.addEventListener(TouchEvent.TOUCH, exitGame); // событие нажатия на кнопку выхода в меню
+			
+			addChild(menuButton);
+			//-----------------------------------
+			
+			
+           
+			
+			allgems = new Vector.<Gem>;
 			allgems.length = InitGems.MAX_COLS * InitGems.MAX_ROWS;
 			allgems.fixed = true;			
 			//init gemPool
@@ -189,11 +241,12 @@ package
 		}
 
 		
-		private function gemsFillRowGaps():void
+		private function gemsFillColGaps():void
 		{
 			var gapCounter:int = 1;
-			
-				for (var c:int = InitGems.MAX_COLS - 1; c > -1; c--)
+			for (var n:int = 0; n < InitGems.MAX_COLS; n++)
+			{
+				EachCol:for (var c:int = InitGems.MAX_COLS - 1; c > -1; c--)
 				{
 					if (isEmptyCol(c))
 					{						
@@ -211,9 +264,10 @@ package
 					}
 					else
 					{						
-						continue;
+						continue EachCol;
 					}								
 				
+			}
 			}
 			
 		}
@@ -313,7 +367,7 @@ package
 			
 			
 			Starling.juggler.delayCall(gemsFillGaps, 0.1);
-			Starling.juggler.delayCall(gemsFillRowGaps, 0.2);			
+			Starling.juggler.delayCall(gemsFillColGaps, 0.2);			
 			if(!isTimeGame)
 				Starling.juggler.delayCall(dropNewGems, 0.3);
 			

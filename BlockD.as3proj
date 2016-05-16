@@ -7,8 +7,8 @@
     <movie path="bin\BlockD.swf" />
     <movie fps="30" />
     <movie width="480" />
-    <movie height="762" />
-    <movie version="18" />
+    <movie height="320" />
+    <movie version="4" />
     <movie minorVersion="0" />
     <movie platform="AIR Mobile" />
     <movie background="#FFFFFF" />
@@ -55,6 +55,7 @@
   <!-- SWC Libraries -->
   <libraryPaths>
     <element path="lib\CEV3-1-11-Starling-Feathers-Box2D.swc" />
+    <element path="lib\greensock.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
