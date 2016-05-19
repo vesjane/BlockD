@@ -73,59 +73,60 @@ package
             NativeApplication.nativeApplication.exit();
         }
 		
-		public function setScaleMode(value:String, width:int = 640, height:int = 1136):void {
-        if (value != STRATCH && value != LETTERBOX && value != ZOOM && value != SMART) {
-                if (value != "") {
-                        trace("Scale mode '" + value + "' not found.");
-                }
-                return;
-        }
-        
-        var starling:Starling = Starling.current;
-        if (starling == null || !starling.isStarted)
-        {
-                return;
-        }
-        
-        var stage:Stage = starling.nativeStage;
-        
-        switch(value) {
-                case STRATCH:
-                        starling.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
-                        break;
-                case LETTERBOX:
-                        var k:Number = Math.min(int(stage.stageWidth / width), int(stage.stageHeight / height));
-                        var w:int = width * k;
-                        var h:int = height * k;
-                        var x:int = (stage.stageWidth - w) * 0.5;
-                        var y:int = (stage.stageHeight - h) * 0.5;
-                        starling.viewPort = new Rectangle(x, y, w, h);
-                        break;
-                case ZOOM:
-                        k = Math.min(stage.stageWidth / width, stage.stageHeight / height);
-                        w = width * k;
-                        h = height * k;
-                        x = (stage.stageWidth - w) * 0.5;
-                        y = (stage.stageHeight - h) * 0.5;
-                        starling.viewPort = new Rectangle(x, y, w, h);
-                        break;
-                case SMART:
-                        if (stage.stageWidth / width > stage.stageHeight / height) {
-                                var s:Number = stage.stageWidth / width;
-                                k = stage.stageWidth / stage.stageHeight;
-                                starling.stage.stageWidth = stage.stageHeight * k / s;
-                                starling.stage.stageHeight = stage.stageHeight / s;
-                        } else {
-                                s = stage.stageHeight / height;
-                                k = stage.stageHeight / stage.stageWidth;
-                                starling.stage.stageWidth = stage.stageWidth / s;
-                                starling.stage.stageHeight = stage.stageWidth * k / s;
-                        }
-						trace(stage.stageWidth, stage.stageHeight);
-                        starling.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
-                        break;
-        }
-}
+		public function setScaleMode(value:String, width:int = 640, height:int = 1136):void 
+		{
+			if (value != STRATCH && value != LETTERBOX && value != ZOOM && value != SMART) {
+					if (value != "") {
+							trace("Scale mode '" + value + "' not found.");
+					}
+					return;
+			}
+			
+			var starling:Starling = Starling.current;
+			if (starling == null || !starling.isStarted)
+			{
+					return;
+			}
+			
+			var stage:Stage = starling.nativeStage;
+			
+			switch(value) {
+					case STRATCH:
+							starling.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+							break;
+					case LETTERBOX:
+							var k:Number = Math.min(int(stage.stageWidth / width), int(stage.stageHeight / height));
+							var w:int = width * k;
+							var h:int = height * k;
+							var x:int = (stage.stageWidth - w) * 0.5;
+							var y:int = (stage.stageHeight - h) * 0.5;
+							starling.viewPort = new Rectangle(x, y, w, h);
+							break;
+					case ZOOM:
+							k = Math.min(stage.stageWidth / width, stage.stageHeight / height);
+							w = width * k;
+							h = height * k;
+							x = (stage.stageWidth - w) * 0.5;
+							y = (stage.stageHeight - h) * 0.5;
+							starling.viewPort = new Rectangle(x, y, w, h);
+							break;
+					case SMART:
+							if (stage.stageWidth / width > stage.stageHeight / height) {
+									var s:Number = stage.stageWidth / width;
+									k = stage.stageWidth / stage.stageHeight;
+									starling.stage.stageWidth = stage.stageHeight * k / s;
+									starling.stage.stageHeight = stage.stageHeight / s;
+							} else {
+									s = stage.stageHeight / height;
+									k = stage.stageHeight / stage.stageWidth;
+									starling.stage.stageWidth = stage.stageWidth / s;
+									starling.stage.stageHeight = stage.stageWidth * k / s;
+							}
+							trace(stage.stageWidth, stage.stageHeight);
+							starling.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+							break;
+			}
+		}
 		
 		
 	}

@@ -15,6 +15,7 @@ package
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import flash.events.TimerEvent;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
@@ -37,6 +38,8 @@ package
 		
 		/** @private тип выбранной игры( бесконечная или на время) */
 		private var isTimeGame:Boolean = true;
+		/** @private первое касание для запуска таймера */
+		private var isGameStart:Boolean = false;
 		
 		
 		private var _stWidth:int;
@@ -50,6 +53,8 @@ package
         private var currentLevel:uint;
         /** @private текущее количество очков */
         private var currentScore:int = 0;
+		 /** @private необходимо количество очков */
+        private var maxScore:int = 8000;
         /** @private текстовое поле для отображения номера уровня */
         private var levelText:TextField;
         /** @private текстовое поле для отображения очков */
@@ -57,6 +62,13 @@ package
 		 
 		 /** @private текстовое поле для отображения времени */
         private var timerText:TextField;
+		 /** @private Стартовое значение таймера */
+		public var levelDuration:int = 60;
+		public var gameTime:int;
+		
+		 
+		 /** @private количество очков за 1 гем */
+		private var gemScore:Number = 10;
 		
 		 
 		[Embed(source = "/../res/Intro.otf",
@@ -80,8 +92,8 @@ package
 		
 	private function onAddedToStage(e:Event):void {
            
-		
-		removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			
+			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			contaner = new Sprite();
 			btnFont = new fontMergeBold;
 			
@@ -89,28 +101,39 @@ package
 			var img:Image = new Image(game.getAssetMgr().getTexture("bg"));	
 			addChild(img);
 			
+			//timer init
+			gameTimer = new Timer(1000,levelDuration);
+			gameTimer.addEventListener(TimerEvent.TIMER, timerHandler);
+			gameTimer.addEventListener(TimerEvent.TIMER_COMPLETE, timeExpired);
+			gameTime = levelDuration;
+			
+			
 			//верхнее меню ------------------------
 			timerText = new TextField(100, 30, "90", btnFont.fontName, 32, 0xFFFFFF);
 			addChild(timerText);
-			timerText.x = 6;
+			timerText.x = 8
 			timerText.y = 20;
+			timerText.text = levelDuration.toString();
 			
 			scoreText = new TextField(this.width/4, 30, currentScore.toString(), btnFont.fontName, 32, 0xFFFFFF);
 			addChild(scoreText);
-			scoreText.x = (4+GEM_WIDTH)*10 / 2 - scoreText.width / 2;		
+			scoreText.x = (4+GEM_WIDTH)*InitGems.MAX_COLS / 2 - scoreText.width / 2;		
 			scoreText.y = 20;
 					
-			menuButton = new Button("",new Image(game.getAssetMgr().getTexture("menuBack")));	
+			menuButton = new Button("",new Image(game.getAssetMgr().getTexture("pause")));	
 			addChild(menuButton);
-			menuButton.x = (4+GEM_WIDTH)*10 - menuButton.width;
+			menuButton.x = (4+GEM_WIDTH)*InitGems.MAX_COLS - menuButton.width;
 			menuButton.y = 20;
 			menuButton.addEventListener(TouchEvent.TOUCH, exitGame); // событие нажатия на кнопку выхода в меню
 			
 			addChild(menuButton);
-			//-----------------------------------
-			
-			
-           
+			//-----------------------------------           
+			initGems();            
+        }
+		
+		
+		private function initGems():void 
+		{
 			
 			allgems = new Vector.<Gem>;
 			allgems.length = InitGems.MAX_COLS * InitGems.MAX_ROWS;
@@ -133,16 +156,72 @@ package
 					g.addEventListener(Gem.GEM_TOUCHED, gemTouched);
 					
 					g.x = X_OFFSET + j * GEM_WIDTH;
-					g.y = Y_OFFSET + i * GEM_HEIGHT;
-				
-					
+					g.y = Y_OFFSET + i * GEM_HEIGHT;					
 					
 					addChild (g);				
 					
 				}
 			}
+		}
+		
+		private function clearBoard():void
+		{
+			for (var i:int = 0; i < InitGems.MAX_COLS; i++ )
+			{
+				for (var j:int = 0; j < InitGems.MAX_ROWS; j++ )
+				{
+					putGemAtRowCol(null, j, i);
+					
+				}
+			}
+			gempool = null;
+			
+		}
+		
+		
+		
+		private function nextLvl():void
+		{
+			
+		}
+		
+		public function timerHandler(event:TimerEvent):void 
+		{
+			if(gameTime > 0)
+				gameTime--;
+			timerText.text = gameTime.toString();
             
         }
+		
+		
+		public function  timeExpired(event:TimerEvent):void 
+		{
+            
+        }
+		
+		private function calculateScore(count:int):void
+		{
+			if (count > 5 && count < 10)
+			{
+				currentScore = currentScore + (count * gemScore)*1.5;
+			}
+			if (count >= 10 && count < 20)
+			{
+				currentScore = currentScore + (count * gemScore)*2;
+			}
+			if (count >= 20)
+			{
+				currentScore = currentScore + (count * gemScore)*2.5;
+			}
+			else
+			{
+				currentScore = currentScore + count * gemScore;
+			}
+			
+			scoreText.text = currentScore.toString();
+			
+		}
+		
 		
 		private function exitGame(e:TouchEvent):void 
 		{
@@ -156,6 +235,11 @@ package
 		
 		private function gemTouched(e:Event):void
 		{
+			if (!isGameStart)
+			{
+				gameTimer.start();
+				isGameStart = true;
+			}
 			var gem:Gem = e.target as Gem;				
 			findeSameGems(gem.row, gem.col);
 			
@@ -164,9 +248,15 @@ package
 		
 		private function gemsFillGaps():void
 		{
+			var gemCounter:Number = 0;
 			for each (var g:Gem in allgems)
 			{
-				if (g && g.marked) removeGemFromRowCol(g.row, g.col);
+				if (g && g.marked)
+				{
+					removeGemFromRowCol(g.row, g.col);
+					gemCounter ++;
+				}
+				
 			}			
 			
 			//from left col to right most
@@ -208,6 +298,8 @@ package
 			
 			
 			}	
+			calculateScore(gemCounter);
+			gemCounter = 0;		
 			
 		}
 		

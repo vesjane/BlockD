@@ -72,8 +72,7 @@ package
 			this.alpha = holder.alpha = 1.0;
 			this.marked = false;
 			this.randomize();
-			img.texture = gemTextures[this.gemType] as Texture;
-			//this.scaleX = this.scaleY = this.holder.scaleX = this.holder.scaleY = stage.stageWidth * .3;
+			img.texture = gemTextures[this.gemType] as Texture;			
 			
 		}
 		

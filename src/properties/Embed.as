@@ -37,6 +37,10 @@ package properties
 		[Embed (source="/../res/33.png" )]
 		public static const menuBack:Class;
 		
+		[Embed (source="/../res/pause.png" )]
+		public static const pause:Class;
+		
+		
 		
 		
 

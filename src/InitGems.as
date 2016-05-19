@@ -67,8 +67,8 @@ package
 			var brand:Bitmap = new Embed.brand as Bitmap;
 			var brand_texture:Texture = Texture.fromBitmap(brand);	
 			
-			var menuBack:Bitmap = new Embed.menuBack as Bitmap;
-			var menuBack_texture:Texture = Texture.fromBitmap(menuBack);			
+			var pause:Bitmap = new Embed.pause as Bitmap;
+			var pause_texture:Texture = Texture.fromBitmap(pause);	
 		
 			
 			
@@ -86,7 +86,7 @@ package
 			
 			assetMgr.addTexture("brand", brand_texture);
 			
-			assetMgr.addTexture("menuBack", menuBack_texture);		
+			assetMgr.addTexture("pause", pause_texture);		
 		
 		}
 		
