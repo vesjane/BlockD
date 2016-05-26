@@ -41,6 +41,9 @@ package
 		/** @private первое касание для запуска таймера */
 		private var isGameStart:Boolean = false;
 		
+		/** @private есть ли еще возможности хода */
+		private var isCombinations:Boolean = true;
+		
 		
 		private var _stWidth:int;
 		private var _stHeight:int;
@@ -364,6 +367,17 @@ package
 			
 		}
 	
+		private function checkMove():Boolean
+		{
+			for (var n:int = 0; n < InitGems.MAX_COLS; n++)
+			{
+				for (var c:int = 0;c < InitGems.MAX_COLS - 1; c++)
+				{
+					
+				}
+			}
+			
+		}
 		
 						
 		
@@ -377,7 +391,6 @@ package
 			
 			var tmpArr:Vector.<Gem> = new Vector.<Gem>;
 			var count:int = 0;		
-			
 			
 			for (var i:int  = 0; i <  arr.length; i++ )
 			{
@@ -407,6 +420,7 @@ package
 				if (allgems[idx2]&& arr[i].col + 1 < InitGems.MAX_COLS && arr[i].gemType == allgems[idx2].gemType && allgems[idx2].marked!= true)
 				{	
 					allgems[idx2].marked = true;
+					isCombinations = true;
 					allgems[idx2].visible = false;
 					tmpArr[count] = allgems[idx2]as Gem;
 					count++;
@@ -415,6 +429,7 @@ package
 				{
 					
 					allgems[idx3].marked = true;
+					isCombinations = true;
 					tmpArr[count] = allgems[idx3] as Gem;
 					allgems[idx3].visible = false;
 					count ++;
@@ -424,6 +439,7 @@ package
 				{
 					
 					allgems[idx4].marked = true;
+					isCombinations = true;
 					tmpArr[count] = allgems[idx4]as Gem;
 					allgems[idx4].visible = false;
 					count++;
@@ -432,6 +448,7 @@ package
 				{
 					
 					allgems[idx5].marked = true;
+					isCombinations = true;
 					allgems[idx5].visible = false;
 					tmpArr[count] = allgems[idx5]as Gem;
 					count++;
@@ -444,8 +461,10 @@ package
 				count = 0;				
 				markGems(tmpArr);
 			}
+			
 		}
 		
+	
 		private function findeSameGems(row:int, col:int):void
 		{
 			var idx:int = col + row * InitGems.MAX_COLS;
@@ -454,9 +473,17 @@ package
 			tmpArr[0] = allgems[idx]; 
 			
 			//TODO:: оптимизировать и исправить алгоритм поиска одинаковых гемов и маркировать их
-			if(tmpArr && tmpArr.length>0)
+			if (tmpArr && tmpArr.length > 0)
+			{
+				isCombinations = false;
 				markGems(tmpArr);
-			
+			}
+				
+			if (!isCombinations || allgems.length < 2)
+			{
+				clearBoard();
+				initGems();
+			}
 			
 			Starling.juggler.delayCall(gemsFillGaps, 0.1);
 			Starling.juggler.delayCall(gemsFillColGaps, 0.2);			
